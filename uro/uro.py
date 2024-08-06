@@ -158,10 +158,12 @@ def main():
 		exit(1)
 	for line in input_stream:
 		cleanline = line.strip() if 'keepslash' in filters else line.strip().rstrip('/')
-		parsed_url = urlparse(cleanline)
+		try:
+			parsed_url = urlparse(cleanline)
+		except ValueError:
+			continue	
 		if parsed_url.netloc:
 			process_url(parsed_url)
-	og_stdout = sys.stdout
 	sys.stdout = open(args.output_file, 'a+') if args.output_file else sys.stdout
 	for host, value in urlmap.items():
 		for path, params in value.items():
@@ -170,3 +172,7 @@ def main():
 					print(host + path + dict_to_params(param))
 			else:
 				print(host + path)
+
+
+if __name__ == '__main__':
+	main()
